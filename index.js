@@ -1,15 +1,28 @@
 const inquirer = require("inquirer");
-const fs = require('fs');
+const fs = require("fs");
 const Employee = require("./lib/Employee");
 const Manager = require("./lib/Employee");
 const Engineer = require("./lib/Employee");
 const Intern = require("./lib/Employee");
 
-Generator.prototype.generateManagerProfile = function () {
-  inquirer.prompt({
+const questions = [
+  {
+    type: "list",
+    name: "role",
+    message: "What is the employee's role?",
+    // function to allow only one manager to be created
+    choices: () => {
+      // if (allEmployees.some(employee => employee.role === 'Manager')) {
+      //     return ['Engineer', 'Intern']
+      // } else {
+      return ["Manager", "Engineer", "Intern"];
+      //}
+    },
+  },
+  {
     type: "text",
     name: "name",
-    message: "What is your name?",
+    message: "What is your full name?",
     validate: (nameInput) => {
       if (nameInput) {
         return true;
@@ -18,6 +31,8 @@ Generator.prototype.generateManagerProfile = function () {
         return false;
       }
     },
+  },
+  {
     type: "text",
     name: "id",
     message: "What is your id number?",
@@ -29,7 +44,9 @@ Generator.prototype.generateManagerProfile = function () {
         return false;
       }
     },
-      type: "text",
+  },
+  {
+    type: "text",
     name: "email",
     message: "What is your email?",
     validate: (emailInput) => {
@@ -40,9 +57,18 @@ Generator.prototype.generateManagerProfile = function () {
         return false;
       }
     },
+  },
+  {
     type: "text",
     name: "officeNumber",
     message: "What is your Office Number?",
+    when: ({ role }) => {
+      if (role === "Manager") {
+        return true;
+      } else {
+        return false;
+      }
+    },
     validate: (emailInput) => {
       if (emailInput) {
         return true;
@@ -51,10 +77,69 @@ Generator.prototype.generateManagerProfile = function () {
         return false;
       }
     },
-    type: "list",
-    name: "action",
-    message: "Whould you like to add a engineer, add an intern or finish building my team?",
-    choices:["add an Engineer", "add an Intern", 'finish building my team']
-  })
-  .then(({}))
+  },
+  {
+    type: "input",
+    name: "github",
+    message: ({ name }) => `What is ${name}'s github username?`,
+    when: ({ role }) => {
+      if (role === "Engineer") {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    validate: (githubInput) => {
+      if (githubInput) {
+        return true;
+      } else {
+        console.log("Please enter a username!");
+        return false;
+      }
+    },
+  },
+  {
+    type: "input",
+    name: "school",
+    message: ({ name }) => `What school did ${name} attend?`,
+    when: ({ role }) => {
+      if (role === "Intern") {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    validate: (githubInput) => {
+      if (githubInput) {
+        return true;
+      } else {
+        console.log("Please enter a school!");
+        return false;
+      }
+    },
+  },
+
+  {
+    type: "confirm",
+    name: "addEmployee",
+    message: "Would you like to add an employee?",
+    default: true,
+  },
+];
+
+const promptUser = () => {
+  return inquirer.prompt(questions);
+  // .then(userResponse => {
+
+  //     // adds to employee data array
+  //     allEmployees.push(userResponse);
+
+  //     // adds another employee based on user selection
+  //     if (userResponse.addEmployee) {
+  //         return promptUser();
+  //     } else {
+  //         return allEmployees;
+  //     };
+  // });
 };
+promptUser();
