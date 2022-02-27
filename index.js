@@ -1,9 +1,7 @@
 const inquirer = require("inquirer");
 const fs = require("fs");
-const Employee = require("./lib/Employee");
-const Manager = require("./lib/Employee");
-const Engineer = require("./lib/Employee");
-const Intern = require("./lib/Employee");
+const {generatePage, writePage} =  require ("./page-template.js");
+const allEmployees= [];
 
 const questions = [
   {
@@ -12,11 +10,11 @@ const questions = [
     message: "What is the employee's role?",
     // function to allow only one manager to be created
     choices: () => {
-      // if (allEmployees.some(employee => employee.role === 'Manager')) {
-      //     return ['Engineer', 'Intern']
-      // } else {
+       if (allEmployees.some(employee => employee.role === 'Manager')) {
+           return ['Engineer', 'Intern']
+       } else {
       return ["Manager", "Engineer", "Intern"];
-      //}
+      }
     },
   },
   {
@@ -128,18 +126,24 @@ const questions = [
 ];
 
 const promptUser = () => {
-  return inquirer.prompt(questions);
-  // .then(userResponse => {
+  return inquirer.prompt(questions)
+  .then(userResponse => {
 
-  //     // adds to employee data array
-  //     allEmployees.push(userResponse);
+      // adds to employee data array
+      allEmployees.push(userResponse);
 
-  //     // adds another employee based on user selection
-  //     if (userResponse.addEmployee) {
-  //         return promptUser();
-  //     } else {
-  //         return allEmployees;
-  //     };
-  // });
+      // adds another employee based on user selection
+      if (userResponse.addEmployee) {
+          return promptUser();
+      } else {
+          return allEmployees;
+      };
+  });
 };
-promptUser();
+
+
+
+promptUser()
+.then(data => generatePage(data))
+.then((generatedHtml) => writePage(generatedHtml))
+.catch(err => console.log(err));
