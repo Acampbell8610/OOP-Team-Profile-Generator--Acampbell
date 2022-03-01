@@ -1,10 +1,12 @@
-const Employee = require('../lib/Employee');
-const Intern = require('../lib/Intern')
-
-
-test('creates a employee profile', ()=>{
-    const intern = new Intern('Dave');
-
-    expect(intern.name).toBe('school');
-  
+const Intern = require("../lib/Intern");
+const intern = new Intern("Intern");
+describe("Intern Class Test", () => {
+  describe("test intern properties", () => {
+    test("creates a intern profile", () => {
+      expect(intern.role).toBe("Intern");
+    });
+    test("generates school", () => {
+      expect(intern.getSchool()).toBe(`School: ${this.school}`);
+    });
+  });
 });
