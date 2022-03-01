@@ -1,75 +1,73 @@
-const inquirer = require('inquirer');
-const fs = require('fs')
-const Employee = require('./lib/Employee')
+const inquirer = require("inquirer");
+const fs = require("fs");
+const Employee = require("./lib/Employee");
 const Manager = require("./lib/Manager");
 const Engineer = require("./lib/Engineer");
 const Intern = require("./lib/Intern");
-// 
+//
 const writePage = (htmlContent) => {
-    fs.writeFile('./dist/index.html', htmlContent, err => {
-        if (err) {
-            throw err
-        };
-        console.log('Page created successfully!');
-    });
-  };
-  
-  console.log(`
+  fs.writeFile("./dist/index.html", htmlContent, (err) => {
+    if (err) {
+      throw err;
+    }
+    console.log("Page created successfully!");
+  });
+};
+
+console.log(`
   Welcome to the Team Profile Generator!  Let's add some employees!
   `);
 
-const addEmployee = employeeInfo => {
+const addEmployee = (employeeInfo) => {
+  // initiates html string for employee cards
+  let allCards = "";
 
-    // initiates html string for employee cards
-    let allCards = '';
+  employeeInfo.forEach((employee) => {
+    const { name, id, email, role } = employee;
+    let newEmployee = "";
+    let extraInfo = "";
 
-    employeeInfo.forEach(employee => {    
-        
-        const { name, id,email, role } = employee;
-        let newEmployee = '';
-        let extraInfo = '';
+    switch (role) {
+      case "Manager":
+        newEmployee = new Manager(name, id, email, employee.officeNumber);
+        extraInfo = newEmployee.getOfficeNumber();
+        break;
+      case "Engineer":
+        newEmployee = new Engineer(name, id, email, employee.github);
+        extraInfo = newEmployee.getGithub();
+        break;
+      case "Intern":
+        newEmployee = new Intern(name, id, email, employee.school);
+        extraInfo = newEmployee.getSchool();
+        break;
+      default:
+        newEmployee = new Employee(name, id, email);
+    }
 
-        switch (role) {
-            case 'Manager':
-                newEmployee = new Manager(name, id,email, employee.officeNumber);
-                extraInfo = newEmployee.getOfficeNumber();
-                break;
-            case 'Engineer': 
-                newEmployee = new Engineer(name, id,email, employee.github);
-                extraInfo = newEmployee.getGithub();
-                break;
-            case 'Intern':
-                newEmployee = new Intern(name, id,email, employee.school);
-                extraInfo = newEmployee.getSchool();
-                break;
-            default:
-                newEmployee = new Employee(name, id,email);
-        };
-
-        // concatenates all employee cards
-        allCards += `
+    // concatenates all employee cards
+    allCards += `
 <div class="column ">
     <div class="cards">
         <div class="card" style:"width: 18rem">
-            <div class="card-body">
-                <div class="card-title text p-3 mb-2 bg-primary text-white">
-                    <h3>${newEmployee.getName()}</h3>
-                    <p >${newEmployee.getRole()}</p>
+            <div class="card-body text p-3 mb-2 bg-primary text-white">
+                <div class="card-title ">
+                    <h2>${newEmployee.getName()}</h2>
+                    <h4 >${newEmployee.getRole()}</h4>
                 </div>
             </div>
-            <div class="card-text">
-                <p>${newEmployee.getId()}<br />
+            <div class="card-text text-center">
+                <p>ID: ${newEmployee.getId()}<br />
                 ${extraInfo}<br />
-                ${newEmployee.getEmail()} </p>
+               Email: ${newEmployee.getEmail()} </p>
             </div>
         </div>
     </div>
-</div>`  
-    });
-    return allCards;
+</div>`;
+  });
+  return allCards;
 };
-const generatePage = data =>{
-    return`
+const generatePage = (data) => {
+  return `
     <!DOCTYPE html>
     <html lang="en">
     <head>
@@ -82,14 +80,14 @@ const generatePage = data =>{
     </head>
     <body>
         <section class="hero">
-            <div class="hero-body alert alert-danger text-align-center">
+            <div class="hero-body p-3 mb-2 bg-danger text-white text-center">
                 <div class="container">
                     <h1 class="title">My Team</h1>
                 </div>
             </div>
         </section>
         <main class="m-6">
-            <div class="columns d-flex flex-wrap-wrap  justify-content-around">
+            <div class="columns d-flex flex-wrap  justify-content-around">
                 ${addEmployee(data)}
             </div>
         </main>
@@ -97,4 +95,4 @@ const generatePage = data =>{
     </html>
     `;
 };
-module.exports = {generatePage, writePage}
+module.exports = { generatePage, writePage };
